@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class WordCounterApp {
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/java/wordCounter/text.txt";
-        String str = readerMethod(filePath).toLowerCase();
-        System.out.println(wordCounter(str));
-
-
+        String str = readerMethod(filePath);
+        sortByQuantity(wordCounter(str));
 
 
     }
@@ -26,25 +26,27 @@ public class WordCounterApp {
         return str.toLowerCase();
     }
 
-    public static String wordCounter(String str) {
+    public static HashMap<String, Integer> wordCounter(String str) {
         HashMap<String, Integer> wordList = new HashMap<>();
-        String list = "";
         String[] arr = str.split(" ");
-        ArrayList<String> brr = new ArrayList<>();
-        for (int i = 0; i < arr.length; i++) {
-            int counter = 1;
-            String s = arr[i];
-            wordList.put(s,i);
-            for (int j = i + 1; j < arr.length; j++) {
-                if (s.equals(arr[j])) counter++;
+        HashMap<String, Integer> map = new HashMap<>();
+        for (String w : arr) {
+            Integer counter = map.get(w);
+            if (counter == null) {
+                map.put(w, 1);
+            } else {
+                map.put(w, counter + 1);
             }
-            if (!brr.contains(s)) {
-                brr.add(s);
-                list += s + " = " + counter + "\n*******************\n";
-
-            }
-
         }
-        return list;
+        return map;
+    }
+
+    public static void sortByQuantity(HashMap<String, Integer> map) {
+        map.entrySet().stream()
+                .sorted((k1, k2) -> -k1.getValue().compareTo(k2.getValue()))
+                .forEach(k -> System.out.println(k.getKey() + ": " + k.getValue()));
+
+
     }
 }
+
